@@ -213,7 +213,7 @@ If the new path's directories does not exist, create them."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages (quote (zlc which-key try use-package)))
+ '(package-selected-packages (quote (magit zlc which-key try use-package)))
  '(smartparens-global-mode t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -342,6 +342,10 @@ If the new path's directories does not exist, create them."
 (use-package ace-jump-buffer
   :ensure t
   :bind (("C-x b" . ace-jump-buffer)))
+
+;; Set up Magit
+(use-package magit
+  :ensure t)
 
 (use-package zlc
   :ensure t)
