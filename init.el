@@ -38,7 +38,8 @@
   :ensure t
   :config (progn
 	    (load-theme 'paganini t)
-	    (set-face-background 'mode-line "VioletRed2")))
+	    (set-face-background 'mode-line "VioletRed2")
+	    (set-cursor-color "VioletRed2")))
 
 ;; Remove menubar, toolbar and scrollbar
 (menu-bar-mode -99)
@@ -135,11 +136,6 @@ If the new path's directories does not exist, create them."
   :ensure t
   :config (smartparens-global-mode t))
 
-;; Set up ido
-(defvar ido-enable-flex-matching t)
-(defvar ido-everywhere t)
-(ido-mode 1)
-
 ;; Use ibuffer for C-x C-b
 (defalias 'list-buffers 'ibuffer)
 
@@ -217,13 +213,13 @@ If the new path's directories does not exist, create them."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages (quote (which-key try use-package)))
+ '(package-selected-packages (quote (zlc which-key try use-package)))
  '(smartparens-global-mode t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.)
+ ;; If there is more than one, they won't work right.
  )
 
 ;; Reloads init.el file with f5 key
@@ -239,6 +235,20 @@ If the new path's directories does not exist, create them."
   :bind (("C-å" . neotree-previous-line)
          ("C-ä" . neotree-next-line)
          ("C-S-n" . neotree-toggle)))
+
+;; Set up swiper, more interactive version of isearch
+(use-package swiper
+  :ensure t
+  :bind (("C-s" . swiper)
+         ("C-r" . swiper)))
+
+;; Set up counsel for completion
+(use-package counsel
+  :ensure t
+  :bind (("C-x C-f" . counsel-find-file)
+	 ("M-x" . counsel-M-x)
+	 ("M-y" . counsel-yank-pop)
+	 :map ivy-minibuffer-map ("M-y" . ivy-next-line)))
 
 ;; Emacs key bindings for evil-nerd-commenter
 (use-package evil-nerd-commenter
@@ -333,11 +343,8 @@ If the new path's directories does not exist, create them."
   :ensure t
   :bind (("C-x b" . ace-jump-buffer)))
 
-;; Set up swiper, more interactive version of isearch
-(use-package swiper
-  :ensure t
-  :bind (("C-s" . swiper)
-         ("C-r" . swiper)))
+(use-package zlc
+  :ensure t)
 
 ;; Set up jedi
 (use-package jedi
@@ -346,11 +353,6 @@ If the new path's directories does not exist, create them."
             (jedi:install-server)
             (setq jedi:complete-on-dot t))
   :hook ((python-mode . jedi:setup)))
-
-(use-package counsel
-  :ensure t
-  :bind (("M-y" . counsel-yank-pop)
-	 :map ivy-minibuffer-map ("M-y" . ivy-next-line)))
 
 ;;; Stupid flychecker wants this to be present at the end of the file: (provide 'init)
 ;;; init.el ends here
