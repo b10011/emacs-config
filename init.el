@@ -192,7 +192,7 @@ If the new path's directories does not exist, create them."
 
 (use-package flycheck
   :ensure t
-  :init (global-flycheck-mode 1)
+  :config (global-flycheck-mode 1)
   :hook (flycheck-mode . flycheck-pycheckers-setup))
 
 (use-package flycheck-pycheckers
@@ -213,7 +213,11 @@ If the new path's directories does not exist, create them."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages (quote (magit zlc which-key try use-package)))
+ '(elfeed-feeds (quote ("https://www.archlinux.org/feeds/news/")))
+ '(global-highlight-parentheses-mode t)
+ '(package-selected-packages
+   (quote
+    (atomic-chrome counsel-projectile projectile elfeed better-shell company-tern highlight-parentheses magit zlc which-key try use-package)))
  '(smartparens-global-mode t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -347,10 +351,59 @@ If the new path's directories does not exist, create them."
 (use-package magit
   :ensure t)
 
+;; Set up zlc, zsh like autocompletion
 (use-package zlc
   :ensure t)
 
-;; Set up jedi
+;; Set up highlight-parentheses
+(use-package highlight-parentheses
+  :ensure t
+  :config (global-highlight-parentheses-mode))
+
+;; Set up better-shell
+;; TODO: check if one could use remote's default shell when opening remote shell
+(use-package better-shell
+  :ensure t
+  :bind (("C-'" . better-shell-shell)
+         ("C-*" . better-shell-remote-open)))
+
+;; Set up elfeed
+(use-package elfeed
+  :ensure t)
+
+;; Set up projectile and counsel-projectile
+(use-package projectile
+  :ensure t
+  :config (progn
+            (projectile-mode +1)
+            (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+            (defvar projectile-completion-system 'ivy)))
+(use-package counsel-projectile
+  :ensure t
+  :config (counsel-projectile-mode +1))
+;; Fixes .projectile fails to ignore folder -bug
+(setq projectile-indexing-method 'native)
+
+;; Set up atomic-chrome
+(use-package atomic-chrome
+  :ensure t
+  :config (atomic-chrome-start-server))
+
+;; Set up company for autocompletion
+(use-package company
+  :ensure t
+  :config (progn
+            (global-company-mode)
+            (setq company-idle-delay 0)
+            (setq company-minimum-prefix-length 3)))
+
+;; Set up company-tern for JavaScript autocompletion
+(use-package company-tern
+  :ensure t
+  :config (add-to-list 'company-backends 'company-tern)
+  :hook ((rjsx-mode . tern-mode)))
+
+;; Set up jedi for Python autocompletion
 (use-package jedi
   :ensure t
   :config (progn
