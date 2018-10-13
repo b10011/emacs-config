@@ -246,15 +246,12 @@ If the new path's directories does not exist, create them."
   :bind (("M-;" . evilnc-comment-or-uncomment-lines)))
 
 ;; Set up vimish fold
-;; Kind of hacky, but we need to require vimish-fold or we can't use
-;; (vimish-fold-persist-on-saving t)
-(when (when (use-package vimish-fold
-        :ensure t
-        :bind (("C-<dead-acute>" . vimish-fold-toggle))
-        :config ) (require 'vimish-fold))
-      (progn
-        (vimish-fold-global-mode 1)
-        (vimish-fold-persist-on-saving t)))
+(use-package vimish-fold
+  :ensure t
+  :bind (("C-<dead-acute>" . vimish-fold-toggle)))
+(require 'vimish-fold)
+(vimish-fold-global-mode 1)
+(defvar vimish-fold-persist-on-saving t)
 
 ;; Set up expand-region
 (use-package expand-region
@@ -320,8 +317,7 @@ If the new path's directories does not exist, create them."
   :bind (("C-c f" . mc/freeze-fake-cursors)
          ("C-c u" . mc/unfreeze-fake-cursors)
          ("C-c c" . mc/remove-cursors-on-blank-lines)))
-(use-package mc-cycle-cursors
-  :ensure t)
+(require 'mc-cycle-cursors)
 
 ;; Execute sexp on pointer globally and replace it with the return value
 (defun replace-eval-last-sexp ()
@@ -350,6 +346,11 @@ If the new path's directories does not exist, create them."
             (jedi:install-server)
             (setq jedi:complete-on-dot t))
   :hook ((python-mode . jedi:setup)))
+
+(use-package counsel
+  :ensure t
+  :bind (("M-y" . counsel-yank-pop)
+	 :map ivy-minibuffer-map ("M-y" . ivy-next-line)))
 
 ;;; Stupid flychecker wants this to be present at the end of the file: (provide 'init)
 ;;; init.el ends here
