@@ -217,7 +217,7 @@ If the new path's directories does not exist, create them."
  '(global-highlight-parentheses-mode t)
  '(package-selected-packages
    (quote
-    (atomic-chrome counsel-projectile projectile elfeed better-shell company-tern highlight-parentheses magit zlc which-key try use-package)))
+    (tss scp atomic-chrome counsel-projectile projectile elfeed better-shell company-tern highlight-parentheses magit zlc which-key try use-package)))
  '(smartparens-global-mode t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -342,10 +342,13 @@ If the new path's directories does not exist, create them."
     (insert (format "%S" value))))
 (global-set-key (kbd "C-c e") 'replace-eval-last-sexp)
 
-;; Set up ace-jump
-(use-package ace-jump-buffer
+;; Set up ivy
+(use-package ivy
   :ensure t
-  :bind (("C-x b" . ace-jump-buffer)))
+  :config (setq ivy-use-virtual-buffers t)
+  :bind (("C-x b" . ivy-switch-buffer)
+	 ("C-c v" . ivy-push-view)
+	 ("C-c V" . ivy-pop-view)))
 
 ;; Set up Magit
 (use-package magit
@@ -388,6 +391,9 @@ If the new path's directories does not exist, create them."
 (use-package atomic-chrome
   :ensure t
   :config (atomic-chrome-start-server))
+
+(use-package scp
+  :ensure t)
 
 ;; Set up company for autocompletion
 (use-package company
