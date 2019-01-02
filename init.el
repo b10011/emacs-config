@@ -15,13 +15,16 @@
 ;; Initialize packages
 (package-initialize)
 
+;; Do not ever indent with tabs
+(setq indent-tabs-mode nil)
+(setq tab-width 2)
+
 ;; Set up use-package -command
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
 
 ;; Always ensure the package exists
-(defvar use-package-always-ensure)
 (setq use-package-always-ensure t)
 
 ;; Set up try -package
@@ -36,10 +39,32 @@
 ;; Set window size
 (when window-system (set-frame-size (selected-frame) 140 40))
 
+;; Disabled due to tons of bugs
+;; Show indicator at 80 char point
+;; (use-package fill-column-indicator
+;;   :config (progn
+;; 	    (setq fci-rule-column 80)
+;;             (setq fci-rule-width 7)
+;;             (setq fci-rule-color "#0c0c0c")
+;;             (turn-on-fci-mode)))
+
+(use-package column-enforce-mode
+  :config (global-column-enforce-mode t))
+
 ;; Set theme and customize it
-(use-package paganini-theme
+;; (use-package paganini-theme
+;;   :config (progn
+;; 	    (load-theme 'paganini t)
+;; 	    (set-face-background 'mode-line "VioletRed2")
+;; 	    (set-cursor-color "VioletRed2")
+;; 	    ))
+;;(set-background-color "#282c34")
+
+;; Can't decide between emacs-doom themes and paganini
+;; (use-package doom-modeline)
+(use-package doom-themes
   :config (progn
-	    (load-theme 'paganini t)
+	    (load-theme 'doom-Iosvkem t)
 	    (set-face-background 'mode-line "VioletRed2")
 	    (set-cursor-color "VioletRed2")))
 
@@ -51,9 +76,6 @@
 ;; Enable linum-mode with custom format
 (global-linum-mode t)
 (defvar linum-format "%d ")
-
-;; Do not indent with tabs (autoindent)
-(setq indent-tabs-mode nil)
 
 ;; Set default directory to home
 (setq default-directory "~/")
@@ -97,7 +119,16 @@ If the new path's directories does not exist, create them."
 
 ;; Enable .js extension for rjsx
 (use-package rjsx-mode
-  :config (add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode)))
+  :config (progn
+	    (add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode))
+	    (setq js2-basic-offset 2)
+	    (defadvice js-jsx-indent-line (after js-jsx-indent-line-after-hack activate)
+	      "Workaround sgml-mode and follow airbnb component style."
+	      (save-excursion
+		(beginning-of-line)
+		(if (looking-at-p "^ +\/?> *$")
+		    (delete-char sgml-basic-offset))))
+	    ))
 
 ;; Set Firefox as default flymd browser
 (defun my-flymd-browser-function (url)
@@ -148,9 +179,13 @@ If the new path's directories does not exist, create them."
 (use-package flycheck-cython)
 (use-package json-mode)
 (use-package spaceline
-  :config (spaceline-spacemacs-theme))
+  :config (progn
+	    (spaceline-spacemacs-theme)
+	    (setq spaceline-minor-modes-p nil)
+	    (setq powerline-height 22)))
 (use-package org-bullets
   :hook ((org-mode . org-bullets-mode)))
+(use-package graphviz-dot-mode)
 (use-package 0xc)
 
 (defvar org-html-postamble nil)
@@ -170,8 +205,9 @@ If the new path's directories does not exist, create them."
 (use-package flycheck-pycheckers
   :config (setq flycheck-pycheckers-checkers '(pylint)))
 
-(use-package hungry-delete
-  :config (global-hungry-delete-mode))
+;; Currently disabled due to not being able to change keys
+;; (use-package hungry-delete
+;;   :config (global-hungry-delete-mode))
 
 (use-package which-key
   :config (which-key-mode))
@@ -187,7 +223,9 @@ If the new path's directories does not exist, create them."
  '(org-agenda-files (quote ("~/work/hours.org")))
  '(package-selected-packages
    (quote
-    (vagrant tss scp atomic-chrome counsel-projectile projectile elfeed better-shell company-tern highlight-parentheses magit zlc which-key try use-package)))
+    (virtualenvwrapper pyenv-mode beacon org-tree-slide haskell-mode eyebrowse jade-mode doom-themes doom-modeline column-enforce-mode graphviz-dot-mode vagrant tss scp atomic-chrome counsel-projectile projectile elfeed better-shell company-tern highlight-parentheses magit zlc which-key try use-package)))
+ '(powerline-buffer-size-suffix t)
+ '(powerline-height 22)
  '(smartparens-global-mode t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -211,8 +249,7 @@ If the new path's directories does not exist, create them."
 
 ;; Set up swiper, more interactive version of isearch
 (use-package swiper
-  :bind (("C-s" . swiper)
-         ("C-r" . swiper)))
+  :bind (("C-s" . swiper)))
 
 ;; Set up counsel for completion
 (use-package counsel
@@ -246,6 +283,11 @@ If the new path's directories does not exist, create them."
 (use-package ace-window
   :bind (("C-x o" . ace-window))
   :config (setq aw-keys '(?a ?s ?d ?f ?q ?w ?e ?r ?t)))
+
+;; Set up eyebrowse for multiple switchable frames
+(use-package eyebrowse
+  :init (setq eyebrowse-keymap-prefix (kbd "C-x w"))
+  :config (eyebrowse-mode))
 
 ;; Set mark at current point and go to beginning of the buffer
 (defun set-mark-and-import ()
@@ -319,6 +361,9 @@ If the new path's directories does not exist, create them."
 (use-package highlight-parentheses
   :config (global-highlight-parentheses-mode))
 
+;; Set up hightlight shortcut for whitespaces
+(global-set-key (kbd "C-c ^") 'whitespace-mode)
+
 ;; Set up better-shell
 ;; TODO: check if one could use remote's default shell when opening remote shell
 (use-package better-shell
@@ -349,12 +394,49 @@ If the new path's directories does not exist, create them."
 ;; Set up vagrant
 (use-package vagrant)
 
+;; Set up Haskell mode
+(use-package haskell-mode)
+
 ;; Set up company for autocompletion
 (use-package company
   :config (progn
             (global-company-mode)
             (setq company-idle-delay 0)
             (setq company-minimum-prefix-length 3)))
+
+;; Set up jade mode
+(use-package jade-mode)
+
+;; Set up org-tree-slide
+(use-package org-tree-slide)
+
+;; Set up beacon
+(defun myblink ()
+  "Makes beacon blink at the beginning of the line"
+  (interactive)
+  (set-mark-command nil)       ;; Set mark
+  (deactivate-mark)            ;; Deactivate mark
+  (move-beginning-of-line nil) ;; Go to beginning of line
+  (beacon-blink)               ;; Blink at the beginning of line
+  (set-mark-command 1))        ;; Go to previous mark
+(use-package beacon
+  :bind ("M-<return>" . #'myblink))
+
+;; Set up pyenv
+(use-package pyenv-mode
+  :hook (python-mode . pyenv-mode))
+
+;; Set up virtualenvwrapper
+(use-package virtualenvwrapper
+  :config (progn
+	    (venv-initialize-interactive-shells)
+	    (venv-initialize-eshell)))
+
+;; Set CSS indentation to 2
+(setq css-indent-offset 2)
+
+;; Set C-r to replace-string
+(global-set-key (kbd "C-r") #'replace-string)
 
 ;; Set up company-tern for JavaScript autocompletion
 (use-package company-tern
