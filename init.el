@@ -170,7 +170,9 @@ If the new path's directories does not exist, create them."
 (use-package string-inflection)
 
 ;; Import misc packages
-(use-package yasnippet)
+(use-package yasnippet
+  :init (setq yas-snippet-dirs '("~/.emacs.d/snippets/"))
+  :config (yas-global-mode t))
 (use-package auto-sudoedit)
 (use-package cinspect)
 (use-package jedi-direx)
@@ -194,7 +196,8 @@ If the new path's directories does not exist, create them."
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((python . t)
-   (js .t)))
+   (js . t)
+   (shell . t)))
 
 (use-package htmlize)
 
@@ -440,6 +443,14 @@ If the new path's directories does not exist, create them."
 
 ;; Set C-r to replace-string
 (global-set-key (kbd "C-r") #'replace-string)
+
+;; Create increment-number-at-point function
+(defun increment-number-at-point ()
+  (interactive)
+  (skip-chars-backward "0-9")
+  (or (looking-at "[0-9]+")
+      (error "No number at point"))
+  (replace-match (number-to-string (1+ (string-to-number (match-string 0))))))
 
 ;; Set up company-tern for JavaScript autocompletion
 (use-package company-tern
