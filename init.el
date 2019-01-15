@@ -220,10 +220,10 @@ If the new path's directories does not exist, create them."
  ;; If there is more than one, they won't work right.
  '(elfeed-feeds (quote ("https://www.archlinux.org/feeds/news/")))
  '(global-highlight-parentheses-mode t)
- '(org-agenda-files (quote ("~/work/hours.org")))
+ '(org-agenda-files (quote ("~/todo.org")))
  '(package-selected-packages
    (quote
-    (virtualenvwrapper pyenv-mode beacon org-tree-slide haskell-mode eyebrowse jade-mode doom-themes doom-modeline column-enforce-mode graphviz-dot-mode vagrant tss scp atomic-chrome counsel-projectile projectile elfeed better-shell company-tern highlight-parentheses magit zlc which-key try use-package)))
+    (flycheck-rebar3 company-erlang latex-preview-pane virtualenvwrapper pyenv-mode beacon org-tree-slide haskell-mode eyebrowse jade-mode doom-themes doom-modeline column-enforce-mode graphviz-dot-mode vagrant tss scp atomic-chrome counsel-projectile projectile elfeed better-shell company-tern highlight-parentheses magit zlc which-key try use-package)))
  '(powerline-buffer-size-suffix t)
  '(powerline-height 22)
  '(smartparens-global-mode t))
@@ -435,6 +435,9 @@ If the new path's directories does not exist, create them."
 ;; Set CSS indentation to 2
 (setq css-indent-offset 2)
 
+(use-package org-mode
+  :bind (("M-p" . org-toggle-latex-fragment)))
+
 ;; Set C-r to replace-string
 (global-set-key (kbd "C-r") #'replace-string)
 
@@ -442,6 +445,10 @@ If the new path's directories does not exist, create them."
 (use-package company-tern
   :config (add-to-list 'company-backends 'company-tern)
   :hook ((rjsx-mode . tern-mode)))
+
+;; Set up company-erlang for Erlang autocompletion
+(use-package company-erlang)
+(use-package flycheck-rebar3)
 
 ;; Set up jedi for Python autocompletion
 (use-package jedi
